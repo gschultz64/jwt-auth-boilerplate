@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 router.post('/signup', (req, res) => {
   // See if the email is already in the DB
-  User.find({email: req.body.email}, (err, user) => {
+  User.findOne({email: req.body.email}, (err, user) => {
     if (user) {
       // Alert the user 
       res.status(401).json({
@@ -51,7 +51,7 @@ router.post('/login', (req, res) => {
     if (user) {
       // check their entered password against the hash
       // if it matches:
-      if (user.authenticated()) {
+      if (user.authenticated(req.body.password)) {
         //log in the user (sign a new token)
         var token = jwt.sign(user.toObject(), process.env.JWT_SECRET, {
           expiresIn: 60 * 60 * 24
@@ -60,16 +60,21 @@ router.post('/login', (req, res) => {
       } else {
         // if it does not match:
         // send an error
-        res.status(401).json({
+        res.json({
           error: true,
+          status: 401,
           message: 'Email or password is incorrect'
         });
       }
     } else {
       // If the user is not in the DB...
-      res.status(401).json(err);
+      res.json({
+        error: true,
+        status: 401,
+        message: 'Account not found'
+      });
     }
-  });
+  })
 });
 
 router.post('/me/from/token', (req, res) => {
