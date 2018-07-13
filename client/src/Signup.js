@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import axios from 'axios'
 
 class Signup extends Component {
@@ -16,7 +16,7 @@ class Signup extends Component {
   }
 
   handleNameChange(e) {
-    this.setState({name: e.target.value})
+    this.setState({ name: e.target.value })
   }
 
   handleEmailChange(e) {
@@ -29,21 +29,33 @@ class Signup extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    axios.post('/auth/signup', {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password
-    }).then(result => {
-      localStorage.setItem('mernToken', result.data.token)
-      this.props.liftToken(result.data)
-    }).catch(err => console.log(err))
+    if (this.state.password.length < 8 || this.state.password.length > 99) {
+      // Password does not meet length requirements
+      this.setState({
+        error: {
+          type: 'auth_error',
+          status: 401,
+          message: 'Password must be between 8 and 99 characters.'
+        },
+        password: ''
+      })
+    } else {
+      axios.post('/auth/signup', {
+        name: this.state.name,
+        email: this.state.email,
+        password: this.state.password
+      }).then(result => {
+        localStorage.setItem('mernToken', result.data.token)
+        this.props.liftToken(result.data)
+      }).catch(err => console.log(err))
+    }
   }
 
   render() {
-    return(
+    return (
       <div>
         <form onSubmit={this.handleSubmit}>
-          Name: <input type="text" value={this.state.name} onChange={this.handleNameChange}/><br/>
+          Name: <input type="text" value={this.state.name} onChange={this.handleNameChange} /><br />
           Email: <input type="email" value={this.state.email} onChange={this.handleEmailChange} /><br />
           Password: <input type="password" value={this.state.password} onChange={this.handlePasswordChange} /><br />
           <input type="submit" value="Sign Up!" className="btn" />
