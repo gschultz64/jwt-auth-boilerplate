@@ -18,7 +18,7 @@
     "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.3.0",
     "merge": "^1.2.1",
-    "mongoose": "^5.3.9",
+    "mongoose": "^5.7.5",
     "url-parse": "^1.4.3"
   }
 }
